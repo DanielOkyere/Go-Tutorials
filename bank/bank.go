@@ -2,34 +2,16 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"strconv"
-	"errors"
+	"example.com/bank/fileops"
+	"example.com/bank/communication"
 )
+
+
 
 const accountBalanceFile = "balance.txt"
 
-func writeBalanceToFile(balance float64) {
-	balanceText := fmt.Sprint(balance)
-	os.WriteFile(accountBalanceFile, []byte(balanceText), 0644)
-}
-
-func readBalanceFromFile() (float64, error) {
-	data, err := os.ReadFile(accountBalanceFile)
-	if err != nil {
-		return 0, errors.New("Failed to find account balance")
-	}
-	balanceText := string(data)
-	balance, err := strconv.ParseFloat(balanceText, 64)
-	if err != nil {
-		return 0, errors.New("Failed to pass value")
-	}
-
-	return balance, nil
-}
-
 func main() {
-	var accountBalance, err  = readBalanceFromFile()
+	var accountBalance, err = fileops.GetFloatFromFile(accountBalanceFile)
 
 	if err != nil {
 		fmt.Println("ERROR")
@@ -41,14 +23,7 @@ func main() {
 	fmt.Println("Welcome to Daniel Okyere's Bank!")
 	fmt.Println("What would you like to do?")
 	for {
-
-		fmt.Println("Select an option to proceed")
-		fmt.Println("1. Check balance")
-		fmt.Println("2. Deposit Money")
-		fmt.Println("3. Withdraw Money")
-		fmt.Println("4. Make an investment")
-		fmt.Println("5. Exit")
-
+		communication.PresentOptions()
 		var choice int
 		fmt.Print("Your chosen option \n")
 		fmt.Scan(&choice)
@@ -64,7 +39,7 @@ func main() {
 				continue
 			}
 			accountBalance += deposit
-			writeBalanceToFile(accountBalance)
+			fileops.WriteFloatToFile(accountBalance, accountBalanceFile)
 			fmt.Printf("Your new balance is %.2f", accountBalance)
 		} else if choice == 3 {
 			var amtWithdrawal float64
@@ -79,7 +54,7 @@ func main() {
 				continue
 			}
 			accountBalance -= amtWithdrawal
-			writeBalanceToFile(accountBalance)
+			fileops.WriteFloatToFile(accountBalance, accountBalanceFile)
 			fmt.Printf("Your new balance is %.2f", accountBalance)
 		} else if choice == 4 {
 			fmt.Print("Invenstment is not ready yet....")
@@ -91,3 +66,5 @@ func main() {
 	fmt.Println("Thanks for choosing our bank")
 
 }
+
+
