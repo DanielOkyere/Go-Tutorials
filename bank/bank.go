@@ -4,24 +4,39 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"errors"
 )
 
 const accountBalanceFile = "balance.txt"
+
 func writeBalanceToFile(balance float64) {
 	balanceText := fmt.Sprint(balance)
 	os.WriteFile(accountBalanceFile, []byte(balanceText), 0644)
 }
 
-func readBalanceFromFile() float64{
-	data, _ := os.ReadFile(accountBalanceFile)
+func readBalanceFromFile() (float64, error) {
+	data, err := os.ReadFile(accountBalanceFile)
+	if err != nil {
+		return 0, errors.New("Failed to find account balance")
+	}
 	balanceText := string(data)
-	balance, _ := strconv.ParseFloat(balanceText, 64)
+	balance, err := strconv.ParseFloat(balanceText, 64)
+	if err != nil {
+		return 0, errors.New("Failed to pass value")
+	}
 
-	return balance
+	return balance, nil
 }
 
 func main() {
-	var accountBalance float64 = readBalanceFromFile()
+	var accountBalance, err  = readBalanceFromFile()
+
+	if err != nil {
+		fmt.Println("ERROR")
+		fmt.Println(err)
+		fmt.Println("---------------")
+		//panic("Cant find account store")
+	}
 
 	fmt.Println("Welcome to Daniel Okyere's Bank!")
 	fmt.Println("What would you like to do?")
