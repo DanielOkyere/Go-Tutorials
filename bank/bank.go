@@ -2,10 +2,26 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 )
 
+const accountBalanceFile = "balance.txt"
+func writeBalanceToFile(balance float64) {
+	balanceText := fmt.Sprint(balance)
+	os.WriteFile(accountBalanceFile, []byte(balanceText), 0644)
+}
+
+func readBalanceFromFile() float64{
+	data, _ := os.ReadFile(accountBalanceFile)
+	balanceText := string(data)
+	balance, _ := strconv.ParseFloat(balanceText, 64)
+
+	return balance
+}
+
 func main() {
-	var accountBalance float64 = 1000000.00
+	var accountBalance float64 = readBalanceFromFile()
 
 	fmt.Println("Welcome to Daniel Okyere's Bank!")
 	fmt.Println("What would you like to do?")
@@ -33,6 +49,7 @@ func main() {
 				continue
 			}
 			accountBalance += deposit
+			writeBalanceToFile(accountBalance)
 			fmt.Printf("Your new balance is %.2f", accountBalance)
 		} else if choice == 3 {
 			var amtWithdrawal float64
@@ -47,6 +64,7 @@ func main() {
 				continue
 			}
 			accountBalance -= amtWithdrawal
+			writeBalanceToFile(accountBalance)
 			fmt.Printf("Your new balance is %.2f", accountBalance)
 		} else if choice == 4 {
 			fmt.Print("Invenstment is not ready yet....")
